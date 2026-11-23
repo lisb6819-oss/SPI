@@ -54,7 +54,7 @@ void MX_SPI2_Init(void)
     Error_Handler();
   }
   /* USER CODE BEGIN SPI2_Init 2 */
-
+  __HAL_SPI_ENABLE(&hspi2);
   /* USER CODE END SPI2_Init 2 */
 
 }
@@ -118,6 +118,11 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
-
+uint8_t spi2_read_write_byte(uint8_t tx_data)
+{
+  uint8_t rx_data = 0;
+  HAL_SPI_TransmitReceive(&hspi2, &tx_data, &rx_data, 1, 1000);
+  return rx_data;
+}
 /* USER CODE END 1 */
 
