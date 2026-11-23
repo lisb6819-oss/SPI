@@ -69,7 +69,6 @@ void norflash_init(void)
         }
     }
 
-    printf("ID:%x\r\n", g_norflash_type);
 }
 
 /**
@@ -350,7 +349,7 @@ void norflash_write(uint8_t *pbuf, uint32_t addr, uint16_t datalen)
     secoff = addr % 4096;       /* 在扇区内的偏移 */
     secremain = 4096 - secoff;  /* 扇区剩余空间大小 */
 
-    printf("ad:%X,nb:%X\r\n", addr, datalen); /* 测试用 */
+    // printf("ad:%X,nb:%X\r\n", addr, datalen); /* 测试用 */
     if (datalen <= secremain)
     {
         secremain = datalen;    /* 不大于4096个字节 */

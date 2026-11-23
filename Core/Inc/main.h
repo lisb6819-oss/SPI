@@ -57,6 +57,14 @@ uint8_t spi2_read_write_byte(uint8_t tx_data);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define WK_UP_Pin GPIO_PIN_0
+#define WK_UP_GPIO_Port GPIOA
+#define KEY0_Pin GPIO_PIN_0
+#define KEY0_GPIO_Port GPIOB
+#define KEY1_Pin GPIO_PIN_3
+#define KEY1_GPIO_Port GPIOB
+#define KEY2_Pin GPIO_PIN_4
+#define KEY2_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

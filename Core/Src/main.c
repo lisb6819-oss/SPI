@@ -18,12 +18,15 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
 #include "spi.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "norflash.h"
+#include "key.h"
+#include "oled.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,6 +47,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+
+const uint8_t g_text_buf[] = {"STM32 SPI TEXT"};
+#define TEXT_SIZE sizeof(g_text_buf)
 
 /* USER CODE END PV */
 
@@ -66,6 +72,11 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+  uint8_t key;
+  uint16_t i = 0;
+  uint8_t datatemp[TEXT_SIZE];
+  uint32_t flash_size;
+  uint16_t id;
 
   /* USER CODE END 1 */
 
@@ -88,7 +99,12 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
+  OLED_Init();
+  norflash_init();
+
+  id = norflash_read_id();
 
   /* USER CODE END 2 */
 
@@ -96,6 +112,36 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    key = key_scan(0);
+
+
+    if(key == KEY0_PRES)
+    {
+      OLED_NewFrame();
+      OLED_PrintASCIIString(0, 0, "KEY0 Pressed", &afont16x8, OLED_COLOR_NORMAL);
+      OLED_ShowFrame();
+
+    }
+    else if(key == KEY1_PRES)
+    {
+      OLED_NewFrame();
+      OLED_PrintASCIIString(0, 0, "KEY1 Pressed", &afont16x8, OLED_COLOR_NORMAL);
+      OLED_ShowFrame();
+    }
+    else if(key == KEY2_PRES)
+    {
+      OLED_NewFrame();
+      OLED_PrintASCIIString(0, 0, "KEY2 Pressed", &afont16x8, OLED_COLOR_NORMAL);
+      OLED_ShowFrame();
+    }
+    else if(key == WKUP_PRES)
+    {
+      OLED_NewFrame();
+      OLED_PrintASCIIString(0, 0, "WKUP Pressed", &afont16x8, OLED_COLOR_NORMAL);
+      OLED_ShowFrame();
+    }
+
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

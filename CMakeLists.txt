@@ -34,7 +34,13 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME}
     Core/Inc/norflash.h
-    Core/Src/norflash.c)
+    Core/Src/norflash.c
+    Core/Inc/key.h
+    Core/Src/key.c
+    Core/Inc/oled.h
+    Core/Src/oled.c
+    Core/Inc/font.h
+    Core/Src/font.c)
 
 # Add STM32CubeMX generated sources
 add_subdirectory(cmake/stm32cubemx)
