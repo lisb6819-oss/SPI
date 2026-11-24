@@ -25,6 +25,12 @@
 #include "spi.h"
 #include "norflash.h"
 
+static void norflash_wait_busy(void);               /* 等待空闲 */
+static void norflash_send_address(uint32_t address);/* 发送地址 */
+static void norflash_write_page(uint8_t *pbuf, uint32_t addr, uint16_t datalen);    /* 写入page */
+static void norflash_write_nocheck(uint8_t *pbuf, uint32_t addr, uint16_t datalen); /* 写flash,不带擦除 */
+
+
 
 
 uint16_t g_norflash_type = W25Q64;     /* 默认是W25Q64 */
@@ -40,7 +46,8 @@ void norflash_init(void)
 
     NORFLASH_CS_GPIO_CLK_ENABLE();      /* NORFLASH CS脚 时钟使能 */
 
-    GPIO_InitTypeDef gpio_init_struct;
+    GPIO_InitTypeDef gpio_init_struct = {0};
+    NORFLASH_CS(1); /* Preload CS high before enabling the output. */
     gpio_init_struct.Pin = NORFLASH_CS_GPIO_PIN;
     gpio_init_struct.Mode = GPIO_MODE_OUTPUT_PP;
     gpio_init_struct.Pull = GPIO_PULLUP;
@@ -50,6 +57,13 @@ void norflash_init(void)
     NORFLASH_CS(1);                     /* 取消片选 */
 
     MX_SPI2_Init();                        /* 初始化SPI2 */
+
+    /* Allow power-up, then release deep power-down before reading ID. */
+    HAL_Delay(10);
+    NORFLASH_CS(0);
+    spi2_read_write_byte(FLASH_ReleasePowerDown);
+    NORFLASH_CS(1);
+    HAL_Delay(1);
 
     g_norflash_type = norflash_read_id();   /* 读取FLASH ID. */
     
@@ -210,6 +224,8 @@ uint16_t norflash_read_id(void)
 {
     uint16_t deviceid;
 
+    g_spi2_last_status = HAL_OK;
+
     NORFLASH_CS(0);
     spi2_read_write_byte(FLASH_ManufactDeviceID);   /* 发送读 ID 命令 */
     spi2_read_write_byte(0);    /* 写入一个字节 */
@@ -219,7 +235,7 @@ uint16_t norflash_read_id(void)
     deviceid |= spi2_read_write_byte(0xFF);         /* 读取低8位字节 */
     NORFLASH_CS(1);
 
-    return deviceid;
+    return (g_spi2_last_status == HAL_OK) ? deviceid : 0;
 }
 
 /**

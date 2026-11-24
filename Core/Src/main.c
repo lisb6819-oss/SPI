@@ -76,7 +76,7 @@ int main(void)
   uint8_t key;
   uint16_t i = 0;
   uint8_t datatemp[TEXT_SIZE];
-  uint32_t flash_size;
+
   char id_str[16];
   uint16_t id;
 
@@ -107,12 +107,22 @@ int main(void)
   norflash_init();
 
 
-  id = norflash_read_id();
+  id = g_norflash_type;
   sprintf(id_str, "0x%04X", id);
 
   OLED_NewFrame();
   OLED_PrintASCIIString(0, 0, "NORFLASH ID:", &afont12x6, OLED_COLOR_NORMAL);
   OLED_PrintASCIIString(0, 12, id_str, &afont12x6, OLED_COLOR_NORMAL);
+  if (id != W25Q64)
+  {
+    OLED_PrintASCIIString(0, 24, id == 0 ? "SPI transfer error" : "Check wiring / CS",
+                          &afont12x6, OLED_COLOR_NORMAL);
+    OLED_ShowFrame();
+    while (1)
+    {
+      HAL_Delay(100);
+    }
+  }
   OLED_ShowFrame();
   /* USER CODE END 2 */
 
@@ -125,7 +135,7 @@ int main(void)
 
     if(key == KEY0_PRES)
     {
-      sprintf((char *)datatemp, "%s%d", g_text_buf, i++);
+      snprintf((char *)datatemp, sizeof(datatemp), "%s%u", g_text_buf, (unsigned int)i++);
       norflash_write(datatemp,0x000000,  TEXT_SIZE);
       OLED_PrintASCIIString(0, 24, "Write Success:", &afont12x6, OLED_COLOR_NORMAL);
       OLED_ShowFrame();

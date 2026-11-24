@@ -41,8 +41,8 @@ void MX_SPI2_Init(void)
   hspi2.Init.Mode = SPI_MODE_MASTER;
   hspi2.Init.Direction = SPI_DIRECTION_2LINES;
   hspi2.Init.DataSize = SPI_DATASIZE_8BIT;
-  hspi2.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi2.Init.CLKPhase = SPI_PHASE_1EDGE;
+  hspi2.Init.CLKPolarity = SPI_POLARITY_HIGH;
+  hspi2.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi2.Init.NSS = SPI_NSS_SOFT;
   hspi2.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
   hspi2.Init.FirstBit = SPI_FIRSTBIT_MSB;
@@ -118,10 +118,15 @@ void HAL_SPI_MspDeInit(SPI_HandleTypeDef* spiHandle)
 }
 
 /* USER CODE BEGIN 1 */
+HAL_StatusTypeDef g_spi2_last_status = HAL_OK;
 uint8_t spi2_read_write_byte(uint8_t tx_data)
 {
   uint8_t rx_data = 0;
-  HAL_SPI_TransmitReceive(&hspi2, &tx_data, &rx_data, 1, 1000);
+  HAL_StatusTypeDef status = HAL_SPI_TransmitReceive(&hspi2, &tx_data, &rx_data, 1, 100);
+  if (status != HAL_OK)
+  {
+    g_spi2_last_status = status;
+  }
   return rx_data;
 }
 /* USER CODE END 1 */

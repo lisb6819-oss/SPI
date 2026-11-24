@@ -41,6 +41,8 @@ extern SPI_HandleTypeDef hspi2;
 void MX_SPI2_Init(void);
 
 /* USER CODE BEGIN Prototypes */
+extern HAL_StatusTypeDef g_spi2_last_status;
+uint8_t spi2_read_write_byte(uint8_t tx_data);
 
 /* USER CODE END Prototypes */
 

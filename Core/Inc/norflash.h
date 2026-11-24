@@ -55,7 +55,7 @@
 #define NM25Q64     0X5216          /* NM25Q64  芯片ID */
 #define NM25Q128    0X5217          /* NM25Q128 芯片ID */
 
-extern uint16_t norflash_TYPE;      /* 定义FLASH芯片型号 */
+extern uint16_t g_norflash_type;      /* 定义FLASH芯片型号 */
  
 /* 指令表 */
 #define FLASH_WriteEnable           0x06 
@@ -87,10 +87,6 @@ extern uint16_t norflash_TYPE;      /* 定义FLASH芯片型号 */
 #define FLASH_ExitQPIMode           0xFF
 
 /* 静态函数 */
-static void norflash_wait_busy(void);               /* 等待空闲 */
-static void norflash_send_address(uint32_t address);/* 发送地址 */
-static void norflash_write_page(uint8_t *pbuf, uint32_t addr, uint16_t datalen);    /* 写入page */
-static void norflash_write_nocheck(uint8_t *pbuf, uint32_t addr, uint16_t datalen); /* 写flash,不带擦除 */
 
 /* 普通函数 */
 void norflash_init(void);                   /* 初始化25QXX */
