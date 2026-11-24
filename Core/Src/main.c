@@ -27,6 +27,7 @@
 #include "norflash.h"
 #include "key.h"
 #include "oled.h"
+#include "stdio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -76,6 +77,7 @@ int main(void)
   uint16_t i = 0;
   uint8_t datatemp[TEXT_SIZE];
   uint32_t flash_size;
+  char id_str[16];
   uint16_t id;
 
   /* USER CODE END 1 */
@@ -104,8 +106,14 @@ int main(void)
   OLED_Init();
   norflash_init();
 
-  id = norflash_read_id();
 
+  id = norflash_read_id();
+  sprintf(id_str, "0x%04X", id);
+
+  OLED_NewFrame();
+  OLED_PrintASCIIString(0, 0, "NORFLASH ID:", &afont12x6, OLED_COLOR_NORMAL);
+  OLED_PrintASCIIString(0, 12, id_str, &afont12x6, OLED_COLOR_NORMAL);
+  OLED_ShowFrame();
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -117,29 +125,21 @@ int main(void)
 
     if(key == KEY0_PRES)
     {
-      OLED_NewFrame();
-      OLED_PrintASCIIString(0, 0, "KEY0 Pressed", &afont16x8, OLED_COLOR_NORMAL);
+      sprintf((char *)datatemp, "%s%d", g_text_buf, i++);
+      norflash_write(datatemp,0x000000,  TEXT_SIZE);
+      OLED_PrintASCIIString(0, 24, "Write Success:", &afont12x6, OLED_COLOR_NORMAL);
       OLED_ShowFrame();
 
     }
     else if(key == KEY1_PRES)
     {
-      OLED_NewFrame();
-      OLED_PrintASCIIString(0, 0, "KEY1 Pressed", &afont16x8, OLED_COLOR_NORMAL);
+      norflash_read(datatemp,0x000000,  TEXT_SIZE);
+      OLED_PrintASCIIString(0, 36, "Read Data:", &afont12x6, OLED_COLOR_NORMAL);
+      datatemp[TEXT_SIZE - 1] = '\0';
+      OLED_PrintASCIIString(0, 48, (char *)datatemp,&afont12x6, OLED_COLOR_NORMAL);    
       OLED_ShowFrame();
     }
-    else if(key == KEY2_PRES)
-    {
-      OLED_NewFrame();
-      OLED_PrintASCIIString(0, 0, "KEY2 Pressed", &afont16x8, OLED_COLOR_NORMAL);
-      OLED_ShowFrame();
-    }
-    else if(key == WKUP_PRES)
-    {
-      OLED_NewFrame();
-      OLED_PrintASCIIString(0, 0, "WKUP Pressed", &afont16x8, OLED_COLOR_NORMAL);
-      OLED_ShowFrame();
-    }
+
 
 
     /* USER CODE END WHILE */
